@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <!-- Konsistensi bahasa & fitur -->
+    <LangVersion>latestMajor</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Build deterministik dan code-style dievaluasi saat build (warning saja) -->
+    <Deterministic>true</Deterministic>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Jangan jadikan semua warning error dulu (biar aman) -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
+    <!-- Simbol debug standar -->
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <!-- Pastikan .editorconfig di-root ikut dibaca semua project -->
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory).editorconfig" />
+  </ItemGroup>
+</Project>

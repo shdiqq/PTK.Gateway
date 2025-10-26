@@ -1,0 +1,181 @@
+{
+  "Cors": {
+    "AllowedOrigins": [
+      "http://localhost:5173",
+      "http://localhost:4200",
+      "http://localhost:3000"
+    ]
+  },
+  "Jwt": {
+    "Secret": "dev-secret-change-me-32chars-minimum",
+    "Issuer": "ptk.gateway.local",
+    "Audience": "ptk.apis"
+  },
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:7000",
+    "RequestIdKey": "X-Request-Id",
+    "RateLimitOptions": {
+      "EnableRateLimiting": true,
+      "ClientIdHeader": "X-Client-Id",
+      "DisableRateLimitHeaders": false
+    }
+  },
+  "Routes": [
+    {
+      "RouteIsCaseSensitive": false,
+      "UpstreamPathTemplate": "/api/echo",
+      "UpstreamHttpMethod": [
+        "GET",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/_backend/echo",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 3
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "UpstreamPathTemplate": "/api/slow",
+      "UpstreamHttpMethod": [
+        "GET",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/_backend/slow",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 200
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "UpstreamPathTemplate": "/api/cbtest",
+      "UpstreamHttpMethod": [
+        "GET",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/_backend/aborted",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "UpstreamPathTemplate": "/api/secure",
+      "UpstreamHttpMethod": [
+        "GET",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/_backend/secure",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7000
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 10,
+      "UpstreamPathTemplate": "/api/funnel/v1/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "apimarketing.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 5
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 5,
+      "UpstreamPathTemplate": "/api/funnel/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/v1/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "apimarketing.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 5
+      }
+    }
+  ],
+  "Security": {
+    "HideForbidden": true
+  }
+}

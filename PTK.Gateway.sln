@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E353CCF7-373B-423D-909E-D08FC31EC904}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTK.Gateway.Api", "src\PTK.Gateway.Api\PTK.Gateway.Api.csproj", "{8DB12317-76C1-4F49-B91D-CA548FD1EE7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTK.Gateway.Data", "src\PTK.Gateway.Data\PTK.Gateway.Data.csproj", "{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTK.Gateway.Domain", "src\PTK.Gateway.Domain\PTK.Gateway.Domain.csproj", "{C5F6647D-9F1E-45BF-A583-2F34F61689ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTK.Gateway.Utilities", "src\PTK.Gateway.Utilities\PTK.Gateway.Utilities.csproj", "{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C97D1024-4247-4E15-9528-B73C99D7270C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PTK.Gateway.Domain.Tests", "tests\PTK.Gateway.Domain.Tests\PTK.Gateway.Domain.Tests.csproj", "{2C3F0DD5-DB04-4F4D-929D-9F2B75121477}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8DB12317-76C1-4F49-B91D-CA548FD1EE7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB12317-76C1-4F49-B91D-CA548FD1EE7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB12317-76C1-4F49-B91D-CA548FD1EE7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB12317-76C1-4F49-B91D-CA548FD1EE7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5F6647D-9F1E-45BF-A583-2F34F61689ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5F6647D-9F1E-45BF-A583-2F34F61689ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5F6647D-9F1E-45BF-A583-2F34F61689ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5F6647D-9F1E-45BF-A583-2F34F61689ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3F0DD5-DB04-4F4D-929D-9F2B75121477}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3F0DD5-DB04-4F4D-929D-9F2B75121477}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3F0DD5-DB04-4F4D-929D-9F2B75121477}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3F0DD5-DB04-4F4D-929D-9F2B75121477}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8DB12317-76C1-4F49-B91D-CA548FD1EE7A} = {E353CCF7-373B-423D-909E-D08FC31EC904}
+		{D03DE1DA-B250-4142-AAB8-7C5CE5CB5FB9} = {E353CCF7-373B-423D-909E-D08FC31EC904}
+		{C5F6647D-9F1E-45BF-A583-2F34F61689ED} = {E353CCF7-373B-423D-909E-D08FC31EC904}
+		{33E3EAD2-C43E-4DE8-BF8C-CD5185FA6CEE} = {E353CCF7-373B-423D-909E-D08FC31EC904}
+		{2C3F0DD5-DB04-4F4D-929D-9F2B75121477} = {C97D1024-4247-4E15-9528-B73C99D7270C}
+	EndGlobalSection
+EndGlobal
