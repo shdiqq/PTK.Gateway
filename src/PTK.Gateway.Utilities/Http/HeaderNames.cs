@@ -7,6 +7,8 @@ public static class HeaderNames
   public const string ClientId = "X-Client-Id";
   public const string UserSub = "X-User-Sub";
   public const string UserRole = "X-User-Role";
+  public const string AppName = "X-App-Name";
+  public const string AppVersion = "X-App-Version";
   public const string Authorization = "Authorization";
 }
 

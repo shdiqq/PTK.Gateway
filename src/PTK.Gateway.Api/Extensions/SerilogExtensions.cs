@@ -9,7 +9,8 @@ public static class SerilogExtensions
       lc.MinimumLevel.Information()
         .Enrich.FromLogContext()
         .Enrich.WithProperty("env", env.EnvironmentName)
-        .Enrich.WithProperty("app", "ptk-gateway")
+        .Enrich.WithProperty("app", AppInfo.Name)
+        .Enrich.WithProperty("version", AppInfo.Version)
         .Enrich.WithProperty("host", Environment.MachineName)
         .WriteTo.Console(new RenderedCompactJsonFormatter());
 
@@ -19,9 +20,10 @@ public static class SerilogExtensions
           loki.Url!,
           labels: new[]
           {
-            new LokiLabel { Key = "app",  Value = "ptk-gateway" },
-            new LokiLabel { Key = "env",  Value = env.EnvironmentName },
-            new LokiLabel { Key = "host", Value = Environment.MachineName }
+            new LokiLabel { Key = "app",     Value = AppInfo.Name },
+            new LokiLabel { Key = "version", Value = AppInfo.Version },
+            new LokiLabel { Key = "env",     Value = env.EnvironmentName },
+            new LokiLabel { Key = "host",    Value = Environment.MachineName }
           },
           textFormatter: new RenderedCompactJsonFormatter()
         );

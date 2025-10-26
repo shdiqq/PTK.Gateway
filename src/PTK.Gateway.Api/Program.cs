@@ -74,10 +74,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(opts =>
 /* ---------- build ---------- */
 var app = builder.Build();
 
+app.UseGlobalExceptionProblem(app.Environment.IsDevelopment());
 app.UseForwardedHeaders();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors();
+app.UseAppInfoHeaders();
 
 // request timing log (JSON compact)
 app.UseGatewayRequestTimingLogging();

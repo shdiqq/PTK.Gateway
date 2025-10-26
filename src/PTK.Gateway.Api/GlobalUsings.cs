@@ -19,5 +19,6 @@ global using Serilog.Sinks.Grafana.Loki;
 global using PTK.Gateway.Domain.Options;
 global using PTK.Gateway.Domain.Policies;
 global using PTK.Gateway.Utilities.Security;
+global using PTK.Gateway.Utilities.App;
 global using PTK.Gateway.Utilities.Http;
 global using PTK.Gateway.Utilities.Routing;

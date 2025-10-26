@@ -51,8 +51,9 @@ public static class ApiBranchExtensions
             // 1) wajib auth
             if (!(ctx.User?.Identity?.IsAuthenticated ?? false))
             {
-              ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
-              await ctx.Response.WriteAsJsonAsync(new { ok = false, error = "Unauthorized" });
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx,
+                StatusCodes.Status401Unauthorized, "Unauthorized",
+                "Authentication is required to access this resource.");
               return;
             }
 
@@ -62,14 +63,13 @@ public static class ApiBranchExtensions
             // 2) allow-list
             if (!FunnelAllowListPolicy.IsAllowed(ctx.Request.Method, rel))
             {
-              ctx.Response.StatusCode = security.HideForbidden ? StatusCodes.Status404NotFound
-                                                               : StatusCodes.Status403Forbidden;
-
-              var payload = security.HideForbidden
-                ? new { ok = false, error = "Not Found" }
-                : new { ok = false, error = "Forbidden: endpoint not allowed via gateway" };
-
-              await ctx.Response.WriteAsJsonAsync(payload);
+              var status = security.HideForbidden ? StatusCodes.Status404NotFound
+                                                  : StatusCodes.Status403Forbidden;
+              var title = security.HideForbidden ? "Not Found" : "Forbidden";
+              var detail = security.HideForbidden
+                         ? "The requested endpoint is not available."
+                         : "Endpoint not allowed via gateway policy.";
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx, status, title, detail);
               return;
             }
 
