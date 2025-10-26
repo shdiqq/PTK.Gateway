@@ -65,8 +65,8 @@ if (app.Environment.IsDevelopment())
     sub ??= "user1";
     role ??= "user";
     var claims = new List<Claim> {
-      new Claim(JwtRegisteredClaimNames.Sub, sub),
-      new Claim("role", role)
+      new Claim(AuthClaimNames.Subject, sub),
+      new Claim(AuthClaimNames.Role, role)
     };
     var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOpt.Secret));
     var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -105,8 +105,8 @@ if (app.Environment.IsDevelopment())
 
   app.MapGet("/_backend/secure", (ClaimsPrincipal user) =>
   {
-    var sub = user.FindFirstValue(JwtRegisteredClaimNames.Sub) ?? "(unknown)";
-    var role = user.FindFirstValue("role") ?? "user";
+    var sub = user.FindFirstValue(AuthClaimNames.Subject) ?? "(unknown)";
+    var role = user.FindFirstValue(AuthClaimNames.Role) ?? "user";
     return Results.Json(new { ok = true, sub, role, at = DateTime.UtcNow });
   }).RequireAuthorization();
 

@@ -24,7 +24,8 @@ public static class ApiBranchExtensions
           // client id
           string? clientId = null;
           if (ctx.User?.Identity?.IsAuthenticated == true)
-            clientId = ctx.User.FindFirst("sub")?.Value ?? ctx.User.FindFirst("client_id")?.Value;
+            clientId = ctx.User.FindFirst(AuthClaimNames.Subject)?.Value
+                       ?? ctx.User.FindFirst(AuthClaimNames.ClientId)?.Value;
 
           if (string.IsNullOrWhiteSpace(clientId))
           {
@@ -37,8 +38,8 @@ public static class ApiBranchExtensions
           // propagate identity to internal services only
           if (ctx.User?.Identity?.IsAuthenticated == true)
           {
-            var sub = ctx.User.FindFirst("sub")?.Value;
-            var role = ctx.User.FindFirst("role")?.Value;
+            var sub = ctx.User.FindFirst(AuthClaimNames.Subject)?.Value;
+            var role = ctx.User.FindFirst(AuthClaimNames.Role)?.Value;
             if (!string.IsNullOrWhiteSpace(sub)) ctx.Request.Headers[HeaderNames.UserSub] = sub;
             if (!string.IsNullOrWhiteSpace(role)) ctx.Request.Headers[HeaderNames.UserRole] = role;
           }

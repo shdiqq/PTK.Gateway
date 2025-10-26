@@ -29,7 +29,7 @@ public static class RequestLoggingExtensions
         else if (seg.Length >= 2) routeGroup = $"/api/{seg[1]}";
         else routeGroup = "/api";
       }
-      var userSub = ctx.User?.FindFirst("sub")?.Value ?? "";
+      var userSub = ctx.User?.FindFirst(AuthClaimNames.Subject)?.Value ?? "";
       var clientIdSeen = ctx.Request.Headers[HeaderNames.ClientId].ToString();
 
       var sw = Stopwatch.StartNew();
