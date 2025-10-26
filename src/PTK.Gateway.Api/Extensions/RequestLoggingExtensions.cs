@@ -21,14 +21,7 @@ public static class RequestLoggingExtensions
       });
 
       var path = ctx.Request.Path.Value ?? "/";
-      string routeGroup = path;
-      if (path.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
-      {
-        var seg = path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        if (seg.Length >= 3) routeGroup = $"/api/{seg[1]}/{seg[2]}";
-        else if (seg.Length >= 2) routeGroup = $"/api/{seg[1]}";
-        else routeGroup = "/api";
-      }
+      string routeGroup = PathUtils.RouteGroupFor(ctx.Request.Path, ApiRoutes.Prefix);
       var userSub = ctx.User?.FindFirst(AuthClaimNames.Subject)?.Value ?? "";
       var clientIdSeen = ctx.Request.Headers[HeaderNames.ClientId].ToString();
 

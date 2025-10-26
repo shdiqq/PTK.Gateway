@@ -15,12 +15,7 @@ public static class CorsExtensions
         else
           p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); // fallback dev
 
-        p.WithExposedHeaders(
-          HeaderNames.RequestId,
-          RateLimitHeaderNames.Limit,
-          RateLimitHeaderNames.Remaining,
-          RateLimitHeaderNames.Reset
-          );
+        p.WithExposedHeaders(ExposedHeaders.All);
       });
     });
 

@@ -10,7 +10,7 @@ public static class ApiBranchExtensions
     FunnelOptions funnelOpt)
   {
     app.MapWhen(
-      ctx => ctx.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase),
+      ctx => PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.Prefix),
       subApp =>
       {
         subApp.Use(async (ctx, next) =>
@@ -46,7 +46,7 @@ public static class ApiBranchExtensions
 
           // ---- khusus funnel
           var path = ctx.Request.Path.Value ?? "/";
-          if (path.StartsWith("/api/funnel/", StringComparison.OrdinalIgnoreCase))
+          if (PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.FunnelPrefix))
           {
             // 1) wajib auth
             if (!(ctx.User?.Identity?.IsAuthenticated ?? false))
@@ -57,9 +57,7 @@ public static class ApiBranchExtensions
             }
 
             // normalisasi relPath untuk allow-list
-            var rel = path["/api/funnel/".Length..].TrimStart('/');
-            if (rel.StartsWith("v1/", StringComparison.OrdinalIgnoreCase))
-              rel = rel["v1/".Length..];
+            var rel = PathUtils.NormalizeFunnelRelative(ctx.Request.Path);
 
             // 2) allow-list
             if (!FunnelAllowListPolicy.IsAllowed(ctx.Request.Method, rel))
@@ -76,7 +74,7 @@ public static class ApiBranchExtensions
             }
 
             // 3) jangan teruskan identitas ke pihak ketiga
-            if (ctx.Request.Headers.ContainsKey("Authorization")) ctx.Request.Headers.Remove("Authorization");
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.Authorization)) ctx.Request.Headers.Remove(HeaderNames.Authorization);
             if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub)) ctx.Request.Headers.Remove(HeaderNames.UserSub);
             if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole)) ctx.Request.Headers.Remove(HeaderNames.UserRole);
 
