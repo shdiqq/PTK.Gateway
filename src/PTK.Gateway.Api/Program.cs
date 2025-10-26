@@ -20,11 +20,39 @@ var security = builder.Configuration.GetSection("Security").Get<SecurityOptions>
 var funnelOpt = builder.Configuration.GetSection("Funnel").Get<FunnelOptions>() ?? new();
 
 // (opsional) juga expose via DI
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
-builder.Services.Configure<CorsOptions>(builder.Configuration.GetSection("Cors"));
-builder.Services.Configure<LokiOptions>(builder.Configuration.GetSection("Loki"));
-builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection("Security"));
-builder.Services.Configure<FunnelOptions>(builder.Configuration.GetSection("Funnel"));
+builder.Services
+  .AddOptions<JwtOptions>()
+  .Bind(builder.Configuration.GetSection("Jwt"))
+  .ValidateDataAnnotations()
+  .Validate(o => builder.Environment.IsDevelopment() || (o.Secret?.Length ?? 0) >= 32,
+            "Jwt:Secret minimal 32 karakter pada non-Development")
+  .ValidateOnStart();
+builder.Services
+  .AddOptions<CorsOptions>()
+  .Bind(builder.Configuration.GetSection("Cors"))
+  .Validate(o => o.AllowedOrigins is not null, "Cors:AllowedOrigins null")
+  .ValidateOnStart();
+builder.Services
+  .AddOptions<LokiOptions>()
+  .Bind(builder.Configuration.GetSection("Loki"))
+  // Url boleh null/empty; kalau diisi harus http/https valid
+  .Validate(o => string.IsNullOrWhiteSpace(o.Url) ||
+                 Uri.TryCreate(o.Url, UriKind.Absolute, out var u) &&
+                 (u.Scheme == Uri.UriSchemeHttp || u.Scheme == Uri.UriSchemeHttps),
+            "Loki:Url harus http/https yang valid")
+  .ValidateOnStart();
+builder.Services
+  .AddOptions<SecurityOptions>()
+  .Bind(builder.Configuration.GetSection("Security"))
+  .ValidateOnStart();
+
+builder.Services
+  .AddOptions<FunnelOptions>()
+  .Bind(builder.Configuration.GetSection("Funnel"))
+  // Di Production, dorong agar tidak kosong (opsional—sesuaikan kebijakanmu)
+  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
+            "Funnel:ApiKey wajib diisi pada non-Development")
+  .ValidateOnStart();
 
 /* ---------- logging / auth / cors / ocelot ---------- */
 builder.Host.UseGatewaySerilog(lokiOpt, builder.Environment);
