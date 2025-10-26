@@ -85,7 +85,7 @@ app.UseAppInfoHeaders();
 app.UseGatewayRequestTimingLogging();
 
 // health boleh tetap terbuka (read-only)
-app.MapGet("/health", () => Results.Ok("ok"));
+app.MapGatewayHealthEndpoints();
 
 // Endpoint debug hanya saat Development
 if (app.Environment.IsDevelopment())
