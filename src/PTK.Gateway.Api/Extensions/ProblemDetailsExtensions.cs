@@ -27,9 +27,36 @@ public static class ProblemDetailsExtensions
 
   // Memudahkan dipakai di middleware (yang tidak bisa return IResult langsung)
   public static Task WriteProblemAsync(
-    HttpContext ctx, int status, string title,
-    string? detail = null, string? type = null, string? instance = null)
-    => CreateProblem(ctx, status, title, detail, type, instance).ExecuteAsync(ctx);
+  HttpContext ctx, int status, string title,
+  string? detail = null, string? type = null, string? instance = null)
+  {
+    // Pastikan RequestId tersedia
+    var reqId = ctx.Response.Headers[HeaderNames.RequestId].ToString();
+    if (string.IsNullOrEmpty(reqId))
+    {
+      reqId = ctx.Request.Headers[HeaderNames.RequestId].ToString();
+      if (string.IsNullOrEmpty(reqId))
+      {
+        reqId = Guid.NewGuid().ToString("N");
+        ctx.Request.Headers[HeaderNames.RequestId] = reqId;
+        ctx.Response.Headers[HeaderNames.RequestId] = reqId;
+      }
+    }
+
+    var problem = new ProblemDetails
+    {
+      Status = status,
+      Title = title,
+      Detail = detail,
+      Type = type,
+      Instance = instance ?? ctx.Request.Path
+    };
+    problem.Extensions["requestId"] = reqId;
+    problem.Extensions["traceId"] = ctx.TraceIdentifier;
+
+    return Results.Json(problem, statusCode: status, contentType: "application/problem+json")
+                  .ExecuteAsync(ctx);
+  }
 
   // Global exception handler (dipanggil di Program.cs)
   public static void UseGlobalExceptionProblem(this IApplicationBuilder app, bool showDetails)
