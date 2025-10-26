@@ -14,6 +14,10 @@
 
     <!-- Simbol debug standar -->
     <DebugType>portable</DebugType>
+
+    <!-- Analyzer .NET bawaan -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
   </PropertyGroup>
 
   <!-- Pastikan .editorconfig di-root ikut dibaca semua project -->

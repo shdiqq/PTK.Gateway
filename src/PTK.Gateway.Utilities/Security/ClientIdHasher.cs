@@ -7,7 +7,8 @@ public static class ClientIdHasher
 {
   public static string FromIpUa(string ip, string? userAgent)
   {
-    using var sha = SHA256.Create();
-    return Convert.ToHexString(sha.ComputeHash(Encoding.UTF8.GetBytes($"{ip}|{userAgent ?? "-"}")));
+    var payload = Encoding.UTF8.GetBytes($"{ip}|{userAgent ?? "-"}");
+    var hash = SHA256.HashData(payload);
+    return Convert.ToHexString(hash);
   }
 }

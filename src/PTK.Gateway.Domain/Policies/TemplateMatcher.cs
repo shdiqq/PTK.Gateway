@@ -16,7 +16,7 @@ public static class TemplateMatcher
 
   private static bool SegMatch(string seg, string tpl)
   {
-    if (tpl.StartsWith("{") && tpl.EndsWith("}"))
+    if (tpl.Length >= 2 && tpl[0] == '{' && tpl[^1] == '}')
     {
       var core = tpl[1..^1]; // nama[:tipe]
       var parts = core.Split(':', 2, StringSplitOptions.RemoveEmptyEntries);

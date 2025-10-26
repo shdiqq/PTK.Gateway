@@ -29,3 +29,21 @@ dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 dotnet_naming_style.camel_case_underscore.capitalization = camel_case
 dotnet_naming_style.camel_case_underscore.required_prefix = _
+
+# ==== Analyzer severity tuning ====
+dotnet_analyzer_diagnostic.category-Performance.severity = warning
+dotnet_analyzer_diagnostic.category-Reliability.severity = warning
+dotnet_analyzer_diagnostic.category-Design.severity = warning
+dotnet_analyzer_diagnostic.category-Style.severity = suggestion
+dotnet_analyzer_diagnostic.category-Naming.severity = suggestion
+dotnet_analyzer_diagnostic.category-Maintainability.severity = suggestion
+dotnet_analyzer_diagnostic.category-Usage.severity = suggestion
+
+# ASP.NET/Serilog penyesuaian
+dotnet_diagnostic.CA2254.severity = none  # message template (tidak relevan untuk Serilog)
+dotnet_diagnostic.CA1848.severity = none  # LoggerMessage.Define (tidak relevan untuk Serilog)
+dotnet_diagnostic.CA2007.severity = none  # ConfigureAwait(false) tidak perlu di ASP.NET Core
+
+# Hanya untuk file di folder tests -> izinkan underscore di nama anggota
+[tests/**/*.cs]
+dotnet_diagnostic.CA1707.severity = none
