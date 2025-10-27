@@ -6,7 +6,6 @@
   <ItemGroup>
     <!-- API deps -->
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.21" />
-    <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
     <PackageVersion Include="Ocelot" Version="24.0.1" />
     <PackageVersion Include="Ocelot.Provider.Polly" Version="24.0.0" />
     <PackageVersion Include="SerilogAnalyzer" Version="0.15.0" />

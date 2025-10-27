@@ -2,7 +2,7 @@ namespace PTK.Gateway.Domain.Policies;
 
 public static class AuthAllowListPolicy
 {
-  private static readonly Dictionary<string, string[]> Allow = new(StringComparer.OrdinalIgnoreCase)
+  private static readonly Dictionary<string, string[]> _allow = new(StringComparer.OrdinalIgnoreCase)
   {
     ["GET"] =
     [
@@ -15,9 +15,9 @@ public static class AuthAllowListPolicy
     ],
     ["POST"] =
     [
-      "Authentication/Login",
-      "Authentication/Login/Idaman",
-      "Authentication/Refresh",
+      "Login",
+      "Login/Idaman",
+      "Refresh",
       "User",
       "User/{id}/Claim",
       "User/{id}/Claim/Many"
@@ -40,7 +40,7 @@ public static class AuthAllowListPolicy
 
   public static bool IsAllowed(string method, string relPath)
   {
-    if (!Allow.TryGetValue(method.ToUpperInvariant(), out var list))
+    if (!_allow.TryGetValue(method.ToUpperInvariant(), out var list))
     {
       return false;
     }
@@ -58,8 +58,8 @@ public static class AuthAllowListPolicy
 
   public static bool IsPublicEndpoint(string relPath)
   {
-    return TemplateMatcher.MatchTemplate(relPath, "Authentication/Login")
-        || TemplateMatcher.MatchTemplate(relPath, "Authentication/Login/Idaman")
-        || TemplateMatcher.MatchTemplate(relPath, "Authentication/Refresh");
+    return TemplateMatcher.MatchTemplate(relPath, "Login")
+        || TemplateMatcher.MatchTemplate(relPath, "Login/Idaman")
+        || TemplateMatcher.MatchTemplate(relPath, "Refresh");
   }
 }

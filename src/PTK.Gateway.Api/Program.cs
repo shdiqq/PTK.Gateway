@@ -1,6 +1,3 @@
-using System.Text;
-using System.Security.Claims;
-
 using Microsoft.AspNetCore.HttpOverrides;
 
 using Ocelot.DependencyInjection;
@@ -24,8 +21,11 @@ builder.Services
   .AddOptions<JwtOptions>()
   .Bind(builder.Configuration.GetSection("Jwt"))
   .ValidateDataAnnotations()
-  .Validate(o => builder.Environment.IsDevelopment() || (o.Secret?.Length ?? 0) >= 32,
-            "Jwt:Secret minimal 32 karakter pada non-Development")
+  .Validate(o => o.Schemes is { Count: > 0 }, "Jwt:Schemes tidak boleh kosong")
+  .Validate(o => o.Schemes!.All(s =>
+      (!string.IsNullOrWhiteSpace(s.Secret) && s.Secret.Length >= 32)
+   || !string.IsNullOrWhiteSpace(s.Authority)),
+   "Jwt: tiap scheme harus punya Secret(>=32) atau Authority")
   .ValidateOnStart();
 builder.Services
   .AddOptions<CorsOptions>()

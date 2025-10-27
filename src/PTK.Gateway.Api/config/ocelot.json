@@ -7,9 +7,14 @@
     ]
   },
   "Jwt": {
-    "Secret": "dev-secret-change-me-32chars-minimum",
-    "Issuer": "ptk.gateway.local",
-    "Audience": "ptk.apis"
+    "Schemes": [
+      {
+        "Name": "AuthBearer",
+        "Issuer": "my.PTK.apps",
+        "Audience": "my.PTK.apps",
+        "Secret": "7Iv5dNWnPDWoRyRmxgqtxuBDuIh4HVfiqaBcG5PaTJrUO27mNKyIuFkxAp9hC9hMuqLsEbL_esQp2uj3n4AsneGSWADMeZYNHSP5hmNG0dA8kwjiOwVlS_DeF21zdUNtRb_j1Ja6KXSyb9a3D5O5I_rzSFt1paHDsEHkfkFhlzs"
+      }
+    ]
   },
   "GlobalConfiguration": {
     "BaseUrl": "http://localhost:7000",
@@ -104,7 +109,7 @@
         }
       ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
+        "AuthenticationProviderKey": "AuthBearer",
         "AllowedScopes": []
       }
     },
@@ -280,8 +285,11 @@
         }
       ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
+        "AuthenticationProviderKey": "AuthBearer",
         "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": {
+        "iss": "^(my\\.PTK\\.apps)$"
       },
       "QoSOptions": {
         "ExceptionsAllowedBeforeBreaking": 2,

@@ -13,19 +13,36 @@ public static class ApiBranchExtensions
       ctx => PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.Prefix),
       subApp =>
       {
-        subApp.Use(async (ctx, next) =>
+        _ = subApp.Use(async (ctx, next) =>
         {
           // header hygiene
-          if (ctx.Request.Headers.ContainsKey(HeaderNames.ApiKey)) ctx.Request.Headers.Remove(HeaderNames.ApiKey);
-          if (ctx.Request.Headers.ContainsKey(HeaderNames.ClientId)) ctx.Request.Headers.Remove(HeaderNames.ClientId);
-          if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub)) ctx.Request.Headers.Remove(HeaderNames.UserSub);
-          if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole)) ctx.Request.Headers.Remove(HeaderNames.UserRole);
+          if (ctx.Request.Headers.ContainsKey(HeaderNames.ApiKey))
+          {
+            _ = ctx.Request.Headers.Remove(HeaderNames.ApiKey);
+          }
+
+          if (ctx.Request.Headers.ContainsKey(HeaderNames.ClientId))
+          {
+            _ = ctx.Request.Headers.Remove(HeaderNames.ClientId);
+          }
+
+          if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub))
+          {
+            _ = ctx.Request.Headers.Remove(HeaderNames.UserSub);
+          }
+
+          if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole))
+          {
+            _ = ctx.Request.Headers.Remove(HeaderNames.UserRole);
+          }
 
           // client id
           string? clientId = null;
           if (ctx.User?.Identity?.IsAuthenticated == true)
+          {
             clientId = ctx.User.FindFirst(AuthClaimNames.Subject)?.Value
                        ?? ctx.User.FindFirst(AuthClaimNames.ClientId)?.Value;
+          }
 
           if (string.IsNullOrWhiteSpace(clientId))
           {
@@ -40,8 +57,15 @@ public static class ApiBranchExtensions
           {
             var sub = ctx.User.FindFirst(AuthClaimNames.Subject)?.Value;
             var role = ctx.User.FindFirst(AuthClaimNames.Role)?.Value;
-            if (!string.IsNullOrWhiteSpace(sub)) ctx.Request.Headers[HeaderNames.UserSub] = sub;
-            if (!string.IsNullOrWhiteSpace(role)) ctx.Request.Headers[HeaderNames.UserRole] = role;
+            if (!string.IsNullOrWhiteSpace(sub))
+            {
+              ctx.Request.Headers[HeaderNames.UserSub] = sub;
+            }
+
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+              ctx.Request.Headers[HeaderNames.UserRole] = role;
+            }
           }
 
           // ---- khusus funnel
@@ -74,9 +98,20 @@ public static class ApiBranchExtensions
             }
 
             // 3) jangan teruskan identitas ke pihak ketiga
-            if (ctx.Request.Headers.ContainsKey(HeaderNames.Authorization)) ctx.Request.Headers.Remove(HeaderNames.Authorization);
-            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub)) ctx.Request.Headers.Remove(HeaderNames.UserSub);
-            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole)) ctx.Request.Headers.Remove(HeaderNames.UserRole);
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.Authorization))
+            {
+              _ = ctx.Request.Headers.Remove(HeaderNames.Authorization);
+            }
+
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub))
+            {
+              _ = ctx.Request.Headers.Remove(HeaderNames.UserSub);
+            }
+
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole))
+            {
+              _ = ctx.Request.Headers.Remove(HeaderNames.UserRole);
+            }
 
             // 4) paksa client-id anonim
             var ip2 = ctx.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";
@@ -117,8 +152,15 @@ public static class ApiBranchExtensions
 
             // Untuk layanan Auth: biarkan Authorization diteruskan (JANGAN dihapus).
             // Tetap bersihkan header identitas “buatan gateway” agar layanan Auth tidak bergantung padanya.
-            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub)) ctx.Request.Headers.Remove(HeaderNames.UserSub);
-            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole)) ctx.Request.Headers.Remove(HeaderNames.UserRole);
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub))
+            {
+              _ = ctx.Request.Headers.Remove(HeaderNames.UserSub);
+            }
+
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole))
+            {
+              _ = ctx.Request.Headers.Remove(HeaderNames.UserRole);
+            }
           }
 
           // contoh injeksi demo internal
@@ -130,10 +172,10 @@ public static class ApiBranchExtensions
           await next();
         });
 
-        subApp.UseCors();
+        _ = subApp.UseCors();
 
         // Ocelot harus dipanggil sinkron blocking
-        subApp.UseOcelot().GetAwaiter().GetResult();
+        _ = subApp.UseOcelot().GetAwaiter().GetResult();
       });
 
     return app;

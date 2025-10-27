@@ -1,5 +1,7 @@
 using System.Security.Claims;
 using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace PTK.Gateway.Api.Extensions;
 
@@ -7,7 +9,7 @@ public static class DebugEndpointsExtensions
 {
   /// <summary>
   /// Map debug endpoints yang hanya untuk Development.
-  /// - GET /_token?sub=...&role=...
+  /// - GET /_token?sub=...&role=...&scheme=...
   /// - GET /_backend/echo
   /// - GET /_backend/slow?ms=...
   /// - GET /_backend/secure (RequireAuthorization)
@@ -16,14 +18,30 @@ public static class DebugEndpointsExtensions
   public static IEndpointRouteBuilder MapGatewayDebugEndpoints(
     this IEndpointRouteBuilder app, JwtOptions jwtOpt)
   {
-    // group agar rapi di OpenAPI kalau nanti ditambah
     var root = app.MapGroup("/")
                   .WithTags("debug");
 
-    root.MapGet("/_token", (string? sub, string? role) =>
+    // === Dev token generator (HANYA untuk scheme dengan Secret/HMAC) ===
+    root.MapGet("/_token", (string? sub, string? role, string? scheme) =>
     {
       sub ??= "user1";
       role ??= "user";
+
+      var sel = string.IsNullOrWhiteSpace(scheme)
+        ? jwtOpt.Schemes.FirstOrDefault()
+        : jwtOpt.Schemes.FirstOrDefault(s => string.Equals(s.Name, scheme, StringComparison.OrdinalIgnoreCase));
+
+      if (sel is null)
+        return Results.Problem(statusCode: 400, title: "Invalid scheme",
+          detail: "Jwt.Schemes kosong atau nama scheme tidak ditemukan.");
+
+      if (string.IsNullOrWhiteSpace(sel.Secret))
+        return Results.Problem(statusCode: 400, title: "Cannot mint token",
+          detail: $"Scheme '{sel.Name}' menggunakan Authority/JWKS (RS256). Gunakan STS asli untuk mendapatkan token.");
+
+      if (string.IsNullOrWhiteSpace(sel.Issuer) || string.IsNullOrWhiteSpace(sel.Audience))
+        return Results.Problem(statusCode: 400, title: "Issuer/Audience required",
+          detail: $"Scheme '{sel.Name}' belum memiliki Issuer/Audience di konfigurasi.");
 
       var claims = new List<Claim>
       {
@@ -31,19 +49,30 @@ public static class DebugEndpointsExtensions
         new(AuthClaimNames.Role, role)
       };
 
-      var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOpt.Secret));
+      var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(sel.Secret));
       var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-      var token = new JwtSecurityToken(jwtOpt.Issuer, jwtOpt.Audience, claims,
+      var token = new JwtSecurityToken(
+        issuer: sel.Issuer,
+        audience: sel.Audience,
+        claims: claims,
         expires: DateTime.UtcNow.AddMinutes(10),
         signingCredentials: creds);
 
       var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-      return Results.Json(new { token = jwt });
+      return Results.Json(new
+      {
+        token = jwt,
+        scheme = sel.Name,
+        iss = sel.Issuer,
+        aud = sel.Audience,
+        expires_in_minutes = 10
+      });
     })
     .WithName("DebugToken")
-    .WithDescription("Dev-only: generate JWT quickly");
+    .WithDescription("Dev-only: generate JWT quickly for a specific scheme (only HMAC/Secret).");
 
+    // === Echo downstream headers/query ===
     root.MapGet("/_backend/echo", (HttpContext ctx) =>
     {
       var q = ctx.Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
@@ -65,6 +94,7 @@ public static class DebugEndpointsExtensions
     })
     .WithName("DebugEcho");
 
+    // === Slow endpoint (simulasi latency) ===
     root.MapGet("/_backend/slow", async (HttpContext ctx) =>
     {
       if (!int.TryParse(ctx.Request.Query["ms"], out var ms)) ms = 1000;
@@ -73,6 +103,7 @@ public static class DebugEndpointsExtensions
     })
     .WithName("DebugSlow");
 
+    // === Secure (butuh Authorization) ===
     root.MapGet("/_backend/secure", (ClaimsPrincipal user) =>
     {
       var sub = user.FindFirstValue(AuthClaimNames.Subject) ?? "(unknown)";
@@ -82,6 +113,7 @@ public static class DebugEndpointsExtensions
     .RequireAuthorization()
     .WithName("DebugSecure");
 
+    // === Aborted request simulator ===
     root.MapGet("/_backend/aborted", async (HttpContext ctx) =>
     {
       await Task.Delay(500);
