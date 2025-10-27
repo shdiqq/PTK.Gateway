@@ -173,6 +173,127 @@
         "PeriodTimespan": 1,
         "Limit": 5
       }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 50,
+      "UpstreamPathTemplate": "/api/auth/Login",
+      "UpstreamHttpMethod": [
+        "POST",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/Authentication/Login",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 5,
+        "Limit": 10
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 50,
+      "UpstreamPathTemplate": "/api/auth/Login/Idaman",
+      "UpstreamHttpMethod": [
+        "POST",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/Authentication/Login/Idaman",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 5,
+        "Limit": 10
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 50,
+      "UpstreamPathTemplate": "/api/auth/Refresh",
+      "UpstreamHttpMethod": [
+        "POST",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/Authentication/Refresh",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "5s",
+        "PeriodTimespan": 5,
+        "Limit": 15
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 5,
+      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "auth.pertamina-ptk.com",
+          "Port": 443
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 5
+      }
     }
   ],
   "Security": {

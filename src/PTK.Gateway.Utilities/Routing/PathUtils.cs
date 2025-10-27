@@ -34,4 +34,9 @@ public static class PathUtils
       rel = rel["v1/".Length..];
     return rel;
   }
+
+  public static string NormalizeAuthRelative(PathString path)
+  {
+    return GetRelative(path, ApiRoutes.AuthPrefix);
+  }
 }

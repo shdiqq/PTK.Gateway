@@ -88,6 +88,39 @@ public static class ApiBranchExtensions
             ctx.Request.Headers[HeaderNames.ApiKey] = funnelOpt.ApiKey;
           }
 
+          if (PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.AuthPrefix))
+          {
+            var rel = PathUtils.NormalizeAuthRelative(ctx.Request.Path);
+
+            // allow-list
+            if (!AuthAllowListPolicy.IsAllowed(ctx.Request.Method, rel))
+            {
+              var status = security.HideForbidden ? StatusCodes.Status404NotFound : StatusCodes.Status403Forbidden;
+              var title = security.HideForbidden ? "Not Found" : "Forbidden";
+              var detail = security.HideForbidden
+                           ? "The requested endpoint is not available."
+                           : "Endpoint not allowed via gateway policy.";
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx, status, title, detail);
+              return;
+            }
+
+            // endpoint publik (Login/Refresh) boleh tanpa JWT di gateway,
+            // selain itu minta sudah authenticated (gateway memverifikasi JWT)
+            var isPublic = AuthAllowListPolicy.IsPublicEndpoint(rel);
+            if (!isPublic && !(ctx.User?.Identity?.IsAuthenticated ?? false))
+            {
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx,
+                StatusCodes.Status401Unauthorized, "Unauthorized",
+                "Authentication is required to access this resource.");
+              return;
+            }
+
+            // Untuk layanan Auth: biarkan Authorization diteruskan (JANGAN dihapus).
+            // Tetap bersihkan header identitas “buatan gateway” agar layanan Auth tidak bergantung padanya.
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserSub)) ctx.Request.Headers.Remove(HeaderNames.UserSub);
+            if (ctx.Request.Headers.ContainsKey(HeaderNames.UserRole)) ctx.Request.Headers.Remove(HeaderNames.UserRole);
+          }
+
           // contoh injeksi demo internal
           if (path.StartsWith("/api/echo", StringComparison.OrdinalIgnoreCase))
           {
