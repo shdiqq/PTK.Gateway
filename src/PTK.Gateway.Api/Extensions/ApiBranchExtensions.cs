@@ -163,6 +163,40 @@ public static class ApiBranchExtensions
             }
           }
 
+          // ---- khusus BOS (internal service, perlu JWT di gateway)
+          if (PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.BosPrefix))
+          {
+            // Wajib sudah auth (meniru config lama yang mensyaratkan Bearer)
+            if (!(ctx.User?.Identity?.IsAuthenticated ?? false))
+            {
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx,
+                StatusCodes.Status401Unauthorized, "Unauthorized",
+                "Authentication is required to access this resource.");
+              return;
+            }
+
+            // Ambil api-key dari konfigurasi & injeksikan ke downstream
+            var bos = ctx.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<BosOptions>>().Value;
+            ctx.Request.Headers[HeaderNames.ApiKey] = bos.ApiKey;
+
+            // Catatan: Authorization tetap diteruskan (tidak dihapus), karena ini layanan internal
+          }
+
+          // ---- khusus CORE (internal service, perlu JWT di gateway)
+          if (PathUtils.IsUnderPrefix(ctx.Request.Path, ApiRoutes.CorePrefix))
+          {
+            if (!(ctx.User?.Identity?.IsAuthenticated ?? false))
+            {
+              await ProblemDetailsExtensions.WriteProblemAsync(ctx,
+                StatusCodes.Status401Unauthorized, "Unauthorized",
+                "Authentication is required to access this resource.");
+              return;
+            }
+
+            var core = ctx.RequestServices.GetRequiredService<Microsoft.Extensions.Options.IOptions<CoreOptions>>().Value;
+            ctx.Request.Headers[HeaderNames.ApiKey] = core.ApiKey;
+          }
+
           // contoh injeksi demo internal
           if (path.StartsWith("/api/echo", StringComparison.OrdinalIgnoreCase))
           {

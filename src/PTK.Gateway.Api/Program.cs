@@ -5,16 +5,18 @@ using Ocelot.Provider.Polly;
 
 using PTK.Gateway.Api.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 /* ---------- load ocelot & bind options ---------- */
 builder.Configuration.AddJsonFile("config/ocelot.json", optional: false, reloadOnChange: true);
 
-var jwtOpt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new();
-var corsOpt = builder.Configuration.GetSection("Cors").Get<CorsOptions>() ?? new();
-var lokiOpt = builder.Configuration.GetSection("Loki").Get<LokiOptions>() ?? new();
-var security = builder.Configuration.GetSection("Security").Get<SecurityOptions>() ?? new();
-var funnelOpt = builder.Configuration.GetSection("Funnel").Get<FunnelOptions>() ?? new();
+JwtOptions jwtOpt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ?? new();
+CorsOptions corsOpt = builder.Configuration.GetSection("Cors").Get<CorsOptions>() ?? new();
+LokiOptions lokiOpt = builder.Configuration.GetSection("Loki").Get<LokiOptions>() ?? new();
+SecurityOptions security = builder.Configuration.GetSection("Security").Get<SecurityOptions>() ?? new();
+FunnelOptions funnelOpt = builder.Configuration.GetSection("Funnel").Get<FunnelOptions>() ?? new();
+BosOptions bosOpt = builder.Configuration.GetSection("Bos").Get<BosOptions>() ?? new();
+CoreOptions coreOpt = builder.Configuration.GetSection("Core").Get<CoreOptions>() ?? new();
 
 // (opsional) juga expose via DI
 builder.Services
@@ -45,13 +47,24 @@ builder.Services
   .AddOptions<SecurityOptions>()
   .Bind(builder.Configuration.GetSection("Security"))
   .ValidateOnStart();
-
 builder.Services
   .AddOptions<FunnelOptions>()
   .Bind(builder.Configuration.GetSection("Funnel"))
   // Di Production, dorong agar tidak kosong (opsional—sesuaikan kebijakanmu)
   .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
             "Funnel:ApiKey wajib diisi pada non-Development")
+  .ValidateOnStart();
+builder.Services
+  .AddOptions<BosOptions>()
+  .Bind(builder.Configuration.GetSection("Bos"))
+  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
+            "Bos:ApiKey wajib diisi pada non-Development")
+  .ValidateOnStart();
+builder.Services
+  .AddOptions<CoreOptions>()
+  .Bind(builder.Configuration.GetSection("Core"))
+  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
+            "Core:ApiKey wajib diisi pada non-Development")
   .ValidateOnStart();
 
 /* ---------- logging / auth / cors / ocelot ---------- */

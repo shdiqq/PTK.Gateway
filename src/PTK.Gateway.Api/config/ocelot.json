@@ -302,6 +302,123 @@
         "PeriodTimespan": 1,
         "Limit": 5
       }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 15,
+      "UpstreamPathTemplate": "/api/bos/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "192.168.51.243",
+          "Port": 10082
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "AuthBearer",
+        "AllowedScopes": []
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 8
+      },
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": false,
+        "UseCookieContainer": false,
+        "MaxConnectionsPerServer": 256,
+        "UseProxy": false
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 12,
+      "UpstreamPathTemplate": "/api/core/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "192.168.51.243",
+          "Port": 10081
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "AuthBearer",
+        "AllowedScopes": []
+      },
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 8
+      },
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": false,
+        "UseCookieContainer": false,
+        "MaxConnectionsPerServer": 256,
+        "UseProxy": false
+      }
+    },
+    {
+      "RouteIsCaseSensitive": false,
+      "Priority": 1,
+      "UpstreamPathTemplate": "/api/PowerBi/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "HEAD",
+        "OPTIONS"
+      ],
+      "DownstreamPathTemplate": "/api/PowerBi/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "192.168.51.243",
+          "Port": 10082
+        }
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 2,
+        "DurationOfBreak": 5,
+        "TimeoutValue": 5000
+      },
+      "RateLimitOptions": {
+        "EnableRateLimiting": true,
+        "Period": "1s",
+        "PeriodTimespan": 1,
+        "Limit": 10
+      },
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": false,
+        "UseCookieContainer": false,
+        "MaxConnectionsPerServer": 256,
+        "UseProxy": false
+      }
     }
   ],
   "Security": {
