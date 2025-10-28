@@ -45,10 +45,14 @@ builder.Services
   .Bind(builder.Configuration.GetSection("Security"))
   .ValidateOnStart();
 
-ApiKeysOptions apiKeys = builder.Configuration.GetSection("ApiKeys").Get<ApiKeysOptions>() ?? new();
-builder.Services
-  .AddOptions<ApiKeysOptions>()
-  .Bind(builder.Configuration.GetSection("ApiKeys"))
+builder.Services.AddOptions<ApiKeysOptions>()
+  .Configure<IConfiguration>((opt, cfg) =>
+  {
+    opt.Values = builder.Configuration
+      .GetSection("ApiKeys")
+      .Get<Dictionary<string, string>>()
+      ?? new(StringComparer.OrdinalIgnoreCase);
+  })
   .Validate(o => builder.Environment.IsDevelopment() || (o.Values?.Count ?? 0) > 0,
             "ApiKeys: minimal satu key pada non-Development")
   .ValidateOnStart();
