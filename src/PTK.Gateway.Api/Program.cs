@@ -14,9 +14,6 @@ JwtOptions jwtOpt = builder.Configuration.GetSection("Jwt").Get<JwtOptions>() ??
 CorsOptions corsOpt = builder.Configuration.GetSection("Cors").Get<CorsOptions>() ?? new();
 LokiOptions lokiOpt = builder.Configuration.GetSection("Loki").Get<LokiOptions>() ?? new();
 SecurityOptions security = builder.Configuration.GetSection("Security").Get<SecurityOptions>() ?? new();
-FunnelOptions funnelOpt = builder.Configuration.GetSection("Funnel").Get<FunnelOptions>() ?? new();
-BosOptions bosOpt = builder.Configuration.GetSection("Bos").Get<BosOptions>() ?? new();
-CoreOptions coreOpt = builder.Configuration.GetSection("Core").Get<CoreOptions>() ?? new();
 
 // (opsional) juga expose via DI
 builder.Services
@@ -47,30 +44,23 @@ builder.Services
   .AddOptions<SecurityOptions>()
   .Bind(builder.Configuration.GetSection("Security"))
   .ValidateOnStart();
+
+ApiKeysOptions apiKeys = builder.Configuration.GetSection("ApiKeys").Get<ApiKeysOptions>() ?? new();
 builder.Services
-  .AddOptions<FunnelOptions>()
-  .Bind(builder.Configuration.GetSection("Funnel"))
-  // Di Production, dorong agar tidak kosong (opsional—sesuaikan kebijakanmu)
-  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
-            "Funnel:ApiKey wajib diisi pada non-Development")
-  .ValidateOnStart();
-builder.Services
-  .AddOptions<BosOptions>()
-  .Bind(builder.Configuration.GetSection("Bos"))
-  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
-            "Bos:ApiKey wajib diisi pada non-Development")
-  .ValidateOnStart();
-builder.Services
-  .AddOptions<CoreOptions>()
-  .Bind(builder.Configuration.GetSection("Core"))
-  .Validate(o => builder.Environment.IsDevelopment() || !string.IsNullOrWhiteSpace(o.ApiKey),
-            "Core:ApiKey wajib diisi pada non-Development")
+  .AddOptions<ApiKeysOptions>()
+  .Bind(builder.Configuration.GetSection("ApiKeys"))
+  .Validate(o => builder.Environment.IsDevelopment() || (o.Values?.Count ?? 0) > 0,
+            "ApiKeys: minimal satu key pada non-Development")
   .ValidateOnStart();
 
-/* ---------- logging / auth / cors / ocelot ---------- */
+/* ---------- Tambah service ke DI container ---------- */
+// logging dengan Serilog + Loki
 builder.Host.UseGatewaySerilog(lokiOpt, builder.Environment);
+// auth dengan JWT bearer
 builder.Services.AddGatewayJwtAuth(jwtOpt);
+// cors
 builder.Services.AddGatewayCors(corsOpt);
+// ocelot + polly
 builder.Services.AddOcelot(builder.Configuration).AddPolly();
 
 // ---------- Forwarded Headers (di belakang reverse proxy) ----------
@@ -85,7 +75,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(opts =>
 });
 
 /* ---------- build ---------- */
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseGlobalExceptionProblem(app.Environment.IsDevelopment());
 app.UseForwardedHeaders();
@@ -103,10 +93,10 @@ app.MapGatewayHealthEndpoints();
 // Endpoint debug hanya saat Development
 if (app.Environment.IsDevelopment())
 {
-  app.MapGatewayDebugEndpoints(jwtOpt);
+  _ = app.MapGatewayDebugEndpoints(jwtOpt);
 }
 
 /* ---------- cabang /api (hardening + allow-list + Ocelot) ---------- */
-app.UseGatewayApiBranch(security, funnelOpt);
+app.UseGatewayApiBranch(security);
 
 app.Run();
