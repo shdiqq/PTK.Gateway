@@ -5,7 +5,7 @@ namespace PTK.Gateway.Utilities.App;
 public static class AppInfo
 {
   // Ganti kalau mau sumber nama dari config
-  public static string Name => "ptk-gateway";
+  public static string Name => "PTK.GATEWAY";
 
   private static string? _version;
   public static string Version => _version ??= GetInformationalVersion();

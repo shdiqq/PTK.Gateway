@@ -17,6 +17,7 @@
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
   </ItemGroup>
 
+  <!-- Ocelot config di folder config\ — implicit Content, jadi pakai Update -->
   <ItemGroup>
     <Content Update="config\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -24,10 +25,24 @@
     </Content>
   </ItemGroup>
 
+  <!-- JANGAN Include; pakai Update agar tidak duplikat -->
+  <ItemGroup>
+    <Content Update="appsettings*.json">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+
+    <!-- web.config defaultnya None; pakai None Update agar tidak jadi Content duplikat -->
+    <None Update="web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
 </Project>
